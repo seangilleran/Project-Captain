@@ -11,8 +11,8 @@ using UnityEngine.EventSystems;
 class SceneManager : MonoBehaviour
 {
     List<GameObject> Actors;
-    GameObject ActorSelected;
     GameObject Player;
+    GameObject SelectedActor;
 
     /// <summary>
     /// Look for Actors and add them to the list. Find the actor 
@@ -21,8 +21,8 @@ class SceneManager : MonoBehaviour
     void Start()
     {
         Actors = new List<GameObject>();
-        ActorSelected = null;
         Player = null;
+        SelectedActor = null;
 
         foreach (var obj in FindObjectsOfType<GameObject>())
         {
@@ -53,23 +53,11 @@ class SceneManager : MonoBehaviour
 
     void Update()
     {
-        if (EventSystem.current.IsPointerOverGameObject())
+        if (EventSystem.current != null
+            && EventSystem.current.IsPointerOverGameObject())
         {
-            return;
-        }
-
-        if (Input.GetButtonUp("Select"))
-        {
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            var hit = new RaycastHit();
-            if (Physics.Raycast(ray, out hit))
-            {
-                var obj = hit.transform.gameObject;
-                if (Actors.Contains(obj))
-                {
-                    ActorSelected = this.SelectObject(obj);
-                }
-            }
+            // Don't look for mouse input if the pointer is over a UI
+            // object--the EventSystem will handle things from there.
             return;
         }
         if (Input.GetButtonUp("Action"))
@@ -85,8 +73,22 @@ class SceneManager : MonoBehaviour
                 }
                 return;
             }
-            Player.SendMessage("MoveTo", 
+            Player.SendMessage("MoveTo",
                 Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            return;
+        }
+        if (Input.GetButtonUp("Select"))
+        {
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var hit = new RaycastHit();
+            if (Physics.Raycast(ray, out hit))
+            {
+                var obj = hit.transform.gameObject;
+                if (Actors.Contains(obj))
+                {
+                    SelectedActor = this.SelectObject(obj);
+                }
+            }
             return;
         }
     }
