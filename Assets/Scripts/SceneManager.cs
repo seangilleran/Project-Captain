@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// The SceneManager should be keeping track of all Actors in play at 
@@ -52,6 +53,11 @@ class SceneManager : MonoBehaviour
 
     void Update()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
         if (Input.GetButtonUp("Select"))
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -66,7 +72,7 @@ class SceneManager : MonoBehaviour
             }
             return;
         }
-        if (Input.GetButtonUp("Order"))
+        if (Input.GetButtonUp("Action"))
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             var hit = new RaycastHit();
@@ -83,6 +89,14 @@ class SceneManager : MonoBehaviour
                 Camera.main.ScreenToWorldPoint(Input.mousePosition));
             return;
         }
+    }
+
+    /// <summary>
+    /// Test method for use with UI controls.
+    /// </summary>
+    public void DebugPing()
+    {
+        Debug.Log("Hello!");
     }
 
     /// <summary>
