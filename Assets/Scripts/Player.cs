@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+[RequireComponent(typeof(Actor))]
 class Player : MonoBehaviour
 {
     void Start()
