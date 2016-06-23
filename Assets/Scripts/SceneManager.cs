@@ -14,29 +14,6 @@ class SceneManager : MonoBehaviour
     GameObject Player;
 
     /// <summary>
-    /// Select an object in the scene. This will tell the object that
-    /// it is selected and deselect other objects. The object must 
-    /// handle its own logic after that.
-    /// </summary>
-    /// <param name="obj">Object to be selected</param>
-    GameObject SelectObject(GameObject obj)
-    {
-        if (!Actors.Contains(obj))
-        {
-            Debug.Log("SceneManager: Object is not an Actor and cannot be "
-                      + "selected.");
-            return null;
-        }
-
-        foreach (var actor in Actors)
-        {
-            actor.SendMessage("Deselect");
-        }
-        obj.SendMessage("Select");
-        return obj;
-    }
-
-    /// <summary>
     /// Look for Actors and add them to the list. Find the actor 
     /// representing the player and store that separately.
     /// </summary>
@@ -63,7 +40,6 @@ class SceneManager : MonoBehaviour
                 Actors.Add(obj);
             }
         }
-
         if (Actors.Count == 0)
         {
             throw new System.Exception("SceneManager: No Actors in Scene.");
@@ -71,12 +47,6 @@ class SceneManager : MonoBehaviour
         if (Player == null)
         {
             throw new System.Exception("SceneManager: No player in Scene.");
-        }
-
-        Debug.Log("SceneManager: Found " + Actors.Count + " Actors in Scene:");
-        foreach (var actor in Actors)
-        {
-            Debug.Log("SceneManager: <" + actor.name + ">");
         }
     }
 
@@ -94,6 +64,47 @@ class SceneManager : MonoBehaviour
                     ActorSelected = this.SelectObject(obj);
                 }
             }
+            return;
         }
+        if (Input.GetButtonUp("Order"))
+        {
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var hit = new RaycastHit();
+            if (Physics.Raycast(ray, out hit))
+            {
+                var obj = hit.transform.gameObject;
+                if (Actors.Contains(obj))
+                {
+                    Player.SendMessage("InteractWith", obj);
+                }
+                return;
+            }
+            Player.SendMessage("MoveTo", 
+                Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            return;
+        }
+    }
+
+    /// <summary>
+    /// Select an object in the scene. This will tell the object that
+    /// it is selected and deselect other objects. The object must 
+    /// handle its own logic after that.
+    /// </summary>
+    /// <param name="obj">Object to be selected</param>
+    GameObject SelectObject(GameObject obj)
+    {
+        if (!Actors.Contains(obj))
+        {
+            Debug.Log("SceneManager: Object is not an Actor and cannot be "
+                      + "selected.");
+            return null;
+        }
+
+        foreach (var actor in Actors)
+        {
+            actor.SendMessage("Deselect");
+        }
+        obj.SendMessage("Select");
+        return obj;
     }
 }

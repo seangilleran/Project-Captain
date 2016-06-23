@@ -13,14 +13,14 @@ class Actor : MonoBehaviour
         Selected = false;
     }
 
+    public void Deselect()
+    {
+        Selected = false;
+    }
+
     public void Select()
     {
         Selected = true;
         Debug.Log(this.name + ": I've been selected!");
-    }
-
-    public void Deselect()
-    {
-        Selected = false;
     }
 }
