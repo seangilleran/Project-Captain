@@ -70,12 +70,12 @@ class SceneManager : MonoBehaviour
                 if (Actors.Contains(obj))
                 {
                     Player.SendMessage("InteractWith", obj);
+                    return;
                 }
+                Player.SendMessage("MoveTo",
+                Camera.main.ScreenToWorldPoint(Input.mousePosition));
                 return;
             }
-            Player.SendMessage("MoveTo",
-                Camera.main.ScreenToWorldPoint(Input.mousePosition));
-            return;
         }
         if (Input.GetButtonUp("Select"))
         {
